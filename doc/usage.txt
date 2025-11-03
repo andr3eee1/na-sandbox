@@ -1,33 +1,81 @@
-NerdArena sandbox
+NerdArena Sandbox
 Copyright © 2023 Cătălin Frâncu <cata@francu.com>
 
-na-sandbox sandboxes a program to constrain and measure time and memory usage.
-na-sandbox uses cgroups and pivot_root to guarantee security. It is primarily
-intented to evaluate user programs on nerdarena.ro
+na-sandbox is a tool designed to sandbox a program, allowing for the constraint and measurement of its time and memory usage. It leverages cgroups for security and is primarily intended for evaluating user programs on nerdarena.ro.
 
 USAGE:
-    na-sandbox [OPTIONS...] PROGRAM [-- PROGRAM_ARGS...]
+    na-sandbox [OPTIONS...] -- <program> [PROGRAM_ARGS...]
 
 OPTIONS:
     -h, --help
             Prints this help message.
 
-    -t, --time <time>
-            User time limit. If the program uses more user time than the
-            amount given, it will be killed. Multiple threads running at the
-            same time will add up their user time. Given as an unsigned
-            number followed by one of the following suffixes: ns(nanoseconds),
-            ms(milliseconds) or s(seconds).
+    -t, --time <TIME>
+            Set the user time limit for the program. If the cumulative user time
+            (including all threads) exceeds this limit, the program will be terminated.
+            The time limit is specified as an unsigned number followed by a suffix:
+            ns (nanoseconds), ms (milliseconds), or s (seconds).
+            Example: --time 1.5s
 
-    -w, --wall-time <wall-time>
-            Wall time limit. If the program runs longer than this (in real
-            time) it is killed. Given as an unsigned number followed by one of
-            the following suffixes: ns(nanoseconds), ms(milliseconds) or
-            s(seconds)
+    -w, --wall-time <WALL_TIME>
+            Set the wall time limit for the program. If the real-time execution
+            of the program surpasses this limit, it will be terminated.
+            The time limit is specified as an unsigned number followed by a suffix:
+            ns (nanoseconds), ms (milliseconds), or s (seconds).
+            Example: --wall-time 2s
 
-ARGS:
-    PROGRAM
-            The program to run, relative to the pivoted root.
+    -m, --memory <MEMORY>
+            Set the memory limit for the program. If the program's memory usage
+            exceeds this limit, it will be terminated.
+            The memory limit is specified as an unsigned number followed by a suffix:
+            B (bytes), K (kilobytes), M (megabytes), or G (gigabytes).
+            Example: --memory 256M
 
-    PROGRAM_ARGS
-            Arguments to pass to the program.
+    -i, --stdin <FILE>
+            Redirect the standard input of the program from the specified file.
+            Example: --stdin my-input.txt
+
+    -o, --stdout <FILE>
+            Redirect the standard output of the program to the specified file.
+            Example: --stdout my-output.txt
+
+    -e, --stderr <FILE>
+            Redirect the standard error of the program to the specified file.
+            Example: --stderr my-error.log
+
+    --root <PATH>
+            Specifies the root directory for the sandbox. The program will be
+            executed in a chroot environment within this directory.
+            Example: --root /path/to/sandbox
+
+    --cpus <CPU_SET>
+            A comma-separated list of CPU cores to which the program will be bound.
+            Example: --cpus 0,1
+
+    --mems <MEM_SET>
+            A comma-separated list of memory nodes from which the program can allocate memory.
+            Example: --mems 0
+
+    --cleanup
+            If specified, the sandbox directory will be automatically removed after
+            the program finishes execution.
+
+PROGRAM:
+    <program>
+            The program to be executed within the sandbox.
+
+    [PROGRAM_ARGS...]
+            Optional arguments to be passed to the program.
+
+EXAMPLES:
+    1. Run a simple command:
+       na-sandbox /bin/ls -- -l
+
+    2. Run a program with a time and memory limit:
+       na-sandbox --time 1s --memory 128M /path/to/my/program -- args
+
+    3. Run a program with input and output redirection:
+       na-sandbox --stdin input.txt --stdout output.txt /path/to/my/program -- args
+
+    4. Run a program in a specific CPU core and memory node:
+       na-sandbox --cpus 0 --mems 0 /path/to/my/program -- args

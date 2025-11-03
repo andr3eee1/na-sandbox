@@ -31,4 +31,24 @@ class Str {
 
     return $match['value'] / $div;
   }
+
+  /**
+   * @param string $s A string consisting of digits followed by B (bytes), K
+   * (kilobytes), M (megabytes) or G (gigabytes).
+   * @return The numeric value converted to bytes.
+   */
+  static function parseSize(string $s): int {
+    if (!preg_match('/^(?P<value>[0-9]+)(?P<unit>B|K|M|G)$/', $s, $match)) {
+      Util::dieWithHelp("Invalid size string '{$s}'.");
+    }
+
+    switch ($match['unit']) {
+      case 'B': $mul = 1; break;
+      case 'K': $mul = 1024; break;
+      case 'M': $mul = 1024 * 1024; break;
+      case 'G': $mul = 1024 * 1024 * 1024; break;
+    }
+
+    return $match['value'] * $mul;
+  }
 }

@@ -1,1 +1,16 @@
+# Temporary files
 *~
+
+# Output files
+my-output.txt
+
+# Testing binaries
+testing/eat-mem
+testing/eat-mem-cpp
+testing/eat-time
+testing/eat-time-c
+testing/eat-time-cpp
+testing/io-test
+
+# Test root directory
+testroot/

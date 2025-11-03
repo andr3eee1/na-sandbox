@@ -14,6 +14,21 @@ class Opt {
   // wall time limit in seconds
   public static ?float $wallTime = null;
 
+  // memory limit in bytes
+  public static ?int $memory = null;
+
+  // cpus to use for the sandbox
+  public static ?string $cpus = null;
+
+  // mems to use for the sandbox
+  public static ?string $mems = null;
+
+  // The root directory for the sandbox
+  public static ?string $root = null;
+
+  // Whether to clean up the sandbox directory
+  public static bool $cleanup = false;
+
   // program to sandbox
   public static ?string $program = null;
 
@@ -41,6 +56,27 @@ class Opt {
         case '-w':
         case '--wall-time':
           self::$wallTime = Str::parseDuration(array_shift($argv));
+          break;
+
+        case '-m':
+        case '--mem':
+          self::$memory = Str::parseSize(array_shift($argv));
+          break;
+
+        case '--cpus':
+          self::$cpus = array_shift($argv);
+          break;
+
+        case '--mems':
+          self::$mems = array_shift($argv);
+          break;
+
+        case '--root':
+          self::$root = array_shift($argv);
+          break;
+
+        case '--cleanup':
+          self::$cleanup = true;
           break;
 
         default:
