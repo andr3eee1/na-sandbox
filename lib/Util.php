@@ -14,13 +14,13 @@ class Util {
   public static function recursiveRemoveDirectory($dir): void {
     $it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
     $files = new RecursiveIteratorIterator($it,
-                 RecursiveIteratorIterator::CHILD_FIRST);
+      RecursiveIteratorIterator::CHILD_FIRST);
     foreach($files as $file) {
-        if ($file->isDir()){
-            rmdir($file->getRealPath());
-        } else {
-            unlink($file->getRealPath());
-        }
+      if ($file->isDir()){
+        rmdir($file->getRealPath());
+      } else {
+        unlink($file->getRealPath());
+      }
     }
     rmdir($dir);
   }
@@ -52,10 +52,8 @@ class Util {
       // 2. Enter the cgroup
       self::$cgroup->enter(getmypid());
       
-      // 3. Chdir to sandbox
-      self::$sandbox->enter();
-
-      // 4. Exec the program
+      // 3. Exec the program via unshare
+      // The chdir is handled by 'unshare --root'
       self::$sandbox->runSandboxed(Opt::$programArgs);
       self::die(sprintf('Failed to exec program. (%s)', Opt::$program));
     }
